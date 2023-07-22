@@ -6,24 +6,26 @@ const Component2 = () => {
     const departmentsData = [
         {
             id: 1,
-            name: 'Department A',
+            name: 'Customer Service',
             subDepartments: [
-                { id: 101, name: 'Sub Department A1' },
-                { id: 102, name: 'Sub Department A2' },
+                { id: 101, name: 'Support' },
+                { id: 102, name: 'Customer Success' },
             ],
         },
         {
             id: 2,
-            name: 'Department B',
+            name: 'Design',
             subDepartments: [
-                { id: 201, name: 'Sub Department B1' },
-                { id: 202, name: 'Sub Department B2' },
+                { id: 201, name: 'Graphic Design' },
+                { id: 202, name: 'Product Design' },
+                { id: 203, name: 'Web Design' },
             ],
         },
     ];
 
     // State to manage selected departments and sub-departments
     const [selected, setSelected] = useState([]);
+    const [expanded, setExpanded] = useState([]);
 
     const isDepartmentSelected = (departmentId) => {
         return selected.includes(departmentId);
@@ -31,6 +33,10 @@ const Component2 = () => {
 
     const isSubDepartmentSelected = (subDepartmentId) => {
         return selected.includes(subDepartmentId);
+    };
+
+    const isDepartmentExpanded = (departmentId) => {
+        return expanded.includes(departmentId);
     };
 
     const handleSelect = (id) => {
@@ -41,21 +47,28 @@ const Component2 = () => {
         }
     };
 
+    const handleDepartmentLabelClick = (departmentId) => {
+        if (expanded.includes(departmentId)) {
+            setExpanded((prevExpanded) => prevExpanded.filter((item) => item !== departmentId));
+        } else {
+            setExpanded((prevExpanded) => [...prevExpanded, departmentId]);
+        }
+    };
+
     return (
         <div>
             {departmentsData.map((department) => (
                 <div key={department.id} className="mb-4">
-                    <div className="flex items-center cursor-pointer">
-                        <Typography>-</Typography>
+                    <div className="flex items-center cursor-pointer" onClick={() => handleDepartmentLabelClick(department.id)}>
+                        <Typography>{isDepartmentExpanded(department.id) ? '-' : '-'}</Typography>
                         <Checkbox checked={isDepartmentSelected(department.id)} onChange={() => handleSelect(department.id)} />
                         <Typography>{department.name}</Typography>
                     </div>
 
                     {department.subDepartments.map((subDept) => (
-                        <Collapse in={isDepartmentSelected(department.id)} key={subDept.id}>
+                        <Collapse in={isDepartmentExpanded(department.id)} key={subDept.id}>
                             <div className="flex ml-4 justify-start items-center">
                                 <Checkbox
-                                    //to change the textbox color when checked
                                     color="secondary"
                                     checked={isSubDepartmentSelected(subDept.id)}
                                     onChange={() => handleSelect(subDept.id)}
